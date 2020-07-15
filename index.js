@@ -1,133 +1,148 @@
-let boardState = [["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""],
-                  ["", "", "", "", "", "", "", "", "", ""]];
-
-let renderBoard = () => {
-    // constructing new shape => moving = true
-
-
-}
-
-class Shape {
-    constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.moving = true;
-        // this.color = color
-
-        var square = document.createElement("div");
-        square.id = "square";
-        // square.setAttribute('style', `background-color:${color};`);
-        board.appendChild(square);
-
-    }
-
-    getThisShape() {
-        return document.getElementById('square');
-    }
-
-    rotate (dir) {
-        // when space bar is pressed
-        // should rotate the shape in the direction
-    }
-
-    // regMovement() {
-    //     //render
-    // }
-
-    move(dir) {
-        //dir will be the specific key that's pressed
-        // when direction key is pressed
-        // moves left or right
-        switch (dir) {
-            //arrow down: this.x -= 1;
-            //make sure x not <= 1
-            //make sure the block below is not filled
-
-            //arrow right: this.y += 1;
-            //make sure y not >= 10 - horizontal length
-
-            //arrow left: this.y -= 1;
-            //make sure y not <= 1
+let createBoardDivs = (board, container) => {
+    for (let i = 0; i <board.height; i ++) {
+        for (let j = 0; j < board.width; j ++) {
+            let e = document.createElement("div");
+            e.setAttribute("id", `${i}-${j}`);
+            container.appendChild(e);
         }
-        //update boardState
-        //render
+    }
+}
+let renderBoardState = (board) => {
+    // render state of board
+    for (let i = 0; i < board.height; i ++) {
+        for (let j = 0; j < board.width; j ++) {
+            let el = document.getElementById(`${i}-${j}`);
+            el.style.backgroundColor = board.boardArr[i][j];
+        }
     }
 
 }
+
+class BoardState {
+    constructor() {
+        this.height = 20;
+        this.width = 10;
+        this.gameOver = false;
+        this.fallingSpeed = 20;
+        this._frameNum = 0;
+
+        this.boardArr = [];
+        for (let i = 0; i < this.height; i ++) {
+            this.boardArr.push([]);
+            for (let j = 0; j < this.width; j ++) {
+                this.boardArr[i].push("");
+            }
+        }
+
+        this.pieces = [];
+    }
+    addPiece(piece) {
+        this.pieces.push(piece);
+    }
+
+    renderPieces() {
+        this.resetBoardArr();
+        for (let piece of this.pieces) {
+            for (let coord of piece.coords) {
+                if (coord[0] >= 0 && coord[1] >= 0) {
+                    this.boardArr[coord[0]][coord[1]] = piece.color;
+                }
+            }
+        }
+    }
+
+    resetBoardArr() {
+        for (let i = 0; i < this.height; i ++) {
+            for (let j = 0; j < this.width; j ++) {
+                this.boardArr[i][j] = "";
+            }
+        }
+    }
+
+    pieceCanMove(piece) {
+        return true;
+    }
+
+    frame(input) {
+        if (this.pieces.length === 0) {
+            let block1 = new Piece();
+            this.addPiece(block1);
+        }
+        this._frameNum += 1;
+        if (this._frameNum % this.fallingSpeed === 0) {
+            //console.log(this.pieces)
+            let currPiece = this.pieces[this.pieces.length-1];
+            if (currPiece.active) {
+                // try to move piece
+                if (this.pieceCanMove(currPiece)) {
+                    // move piece
+                    currPiece.moveDown();
+                } else {
+                    currPiece.active = false;
+                }
+            } else {
+                // check for gameOver condition
+                // set gameOver property
+                // create a new piece
+            }
+        }
+        // case: moveFrame
+        // case: piece falling
+        // test if move is possible
+        //  update position to one square lower if possible
+        //  otherwise go to new piece
+        // case: new piece
+        // check if game over
+        // set gameOver
+        // otherwise
+        // set old piece to inactive
+        // create a new piece
+        // exit to piece falling
+        // case: not moveFrame
+        //  update from user input
+        this.renderPieces();
+    }
+
+}
+
+class Piece {
+    constructor() {
+        this.coords = [[0, 4], [0, 5], [0, 6], [-1, 5]];
+        this.active = true;
+        this.color = 'blue';
+    }
+
+    moveDown () {
+        this.coords = this.coords.map( (el) => [el[0]+1, el[1]]);
+    }
+
+}
+
+let handleInput = () => {
+    return;
+}
+
 window.addEventListener("DOMContentLoaded", event => {
-    const board = document.getElementById('board');
-    // let squareRow = 3;
-    // let squareCol = 5;
-
-    // let square = document.createElement("div");
-    // square.id = "square";
-    // board.appendChild(square);
-
-    var square = new Shape(1, 5, 'blue');
+    let board = new BoardState();
+    let container = document.getElementById("board");
+    createBoardDivs(board, container);
 
 
-    // what is square? new shape?
-    // what elements am i updating
-    // set square to be the shape the shape that is moving
 
-    let renderSquare = () => {
-        // get the actual square row
-        let squareCol = square.y;
-        let squareRow = square.x;
-        console.log(square.getThisShape());
-        square
-        .getThisShape()
-        .setAttribute('style', `grid-column:${squareCol} / ${squareCol + 1};grid-row:${squareRow} / ${squareRow + 1};`);
-    }
+    // in set interval
+    // handle input
+    // update boardState
+    // invoke renderBoardState
+    let frameInterval =setInterval(() => {
+        let input = handleInput();
+        board.frame(input);
+        renderBoardState(board);
 
-    renderSquare();
-    let downSquare = setInterval(() => {
-        //if board overflow: clear interval
+    }, 50)
 
-        //VVVVVVVVV THIS IS NEEDED, but error is thrown
-        // if (boardState[square.x][square.y-1]!==""){
-        //     clearInterval(downSquare);
-        // }
-        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        // if the square below is empty
-        // board[square.x + 2] === ""
-        if (square.x < 20 && boardState[square.x][square.y-1] === "") {
-            square.x += 1;
-            renderSquare();
-        } else {
-            boardState[square.x-1][square.y-1] = "-";
-            square.moving = false;
-            square.getThisShape().classList.add('block');
-            square.getThisShape().id = "";
-            // set moving to false
-            // square.moving = false;
-            // create new shape
-            square = new Shape(1,5);
-            renderSquare();
-            // that shape is now what moves
 
-        }
-    },50);
-
-    //event listeners for direction keys and space bar: keydown event
-    //setInterval Shape.regMovement()
-
+    // let block1 = new Piece();
+    // board.addPiece(block1);
+    // board.renderPieces();
+    // renderBoardState(board);
 });
